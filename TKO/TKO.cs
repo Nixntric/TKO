@@ -5,9 +5,9 @@ using VRC.SDKBase;
 /// <summary>
 /// TKO - Hand and finger colliders for VRChat
 /// 
-/// SETUP INSTRUCTIONS:
+/// IMPORTANT SETUP INSTRUCTIONS:
 /// 1. Create a new physics layer called "HandColliders" (or similar)
-/// 2. Set the handCollidersLayer field to that layer number (22 by default)
+/// 2. Set the handCollidersLayer field to that layer number
 /// 3. Go to Edit > Project Settings > Physics
 /// 4. In the Layer Collision Matrix, UNCHECK the collision between:
 ///    - "HandColliders" and "Player"
@@ -20,7 +20,10 @@ using VRC.SDKBase;
 public class TKO : UdonSharpBehaviour
 {
     [Header("Hand Collider Objects")]
+    [Tooltip("Drag the right hand collider GameObject here")]
     public GameObject rightHandCollider;
+    
+    [Tooltip("Drag the left hand collider GameObject here")]
     public GameObject leftHandCollider;
     
     [Header("Right Hand Finger Colliders")]
@@ -38,12 +41,20 @@ public class TKO : UdonSharpBehaviour
     public GameObject leftPinkyCollider;
     
     [Header("Settings")]
+    [Tooltip("How smoothly the colliders follow hands (higher = smoother but more lag)")]
     public float followSpeed = 50f;
+    
+    [Tooltip("Scale colliders based on avatar size")]
     public bool scaleWithAvatar = true;
+    
+    [Tooltip("Enable finger colliders only in VR (recommended to prevent desktop issues)")]
     public bool vrOnlyFingers = true;
+    
+    [Tooltip("Disable hand colliders entirely for desktop users")]
     public bool vrOnlyHands = false;
     
     [Header("Physics Layer (REQUIRED)")]
+    [Tooltip("IMPORTANT: Create a layer called 'HandColliders' and set it here. Then in Edit > Project Settings > Physics, disable collision between 'HandColliders' and 'Player'/'PlayerLocal' layers.")]
     public int handCollidersLayer = 22;
     
     private VRCPlayerApi localPlayer;
@@ -61,6 +72,8 @@ public class TKO : UdonSharpBehaviour
     private Rigidbody leftMiddleRb;
     private Rigidbody leftRingRb;
     private Rigidbody leftPinkyRb;
+    
+
     
     private Vector3 rightHandOriginalScale;
     private Vector3 leftHandOriginalScale;
@@ -259,7 +272,9 @@ public class TKO : UdonSharpBehaviour
     private void CalculateAvatarScale()
     {
         float eyeHeight = localPlayer.GetAvatarEyeHeightAsMeters();
+        
         avatarScale = eyeHeight / 1.6f;
+        
         avatarScale = Mathf.Clamp(avatarScale, 0.1f, 10f);
     }
     
@@ -288,7 +303,7 @@ public class TKO : UdonSharpBehaviour
         if (leftMiddleCollider != null && leftMiddleCollider.activeSelf)
             leftMiddleCollider.transform.localScale = leftFingerOriginalScales[2] * avatarScale;
         if (leftRingCollider != null && leftRingCollider.activeSelf)
-            leftHandCollider.transform.localScale = leftFingerOriginalScales[3] * avatarScale;
+            leftRingCollider.transform.localScale = leftFingerOriginalScales[3] * avatarScale;
         if (leftPinkyCollider != null && leftPinkyCollider.activeSelf)
             leftPinkyCollider.transform.localScale = leftFingerOriginalScales[4] * avatarScale;
     }
